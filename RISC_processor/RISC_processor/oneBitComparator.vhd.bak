@@ -1,0 +1,18 @@
+library ieee;
+use ieee.std_logic_1164.all;
+
+entity oneBitComparator is
+	port(
+		LTprev,GTprev, EQprev A,B: in std_logic;
+		LT,GT,EQ: out std_logic
+	);
+end oneBitComparator;
+
+architecture struct of oneBitComparator is 
+begin
+
+	LT <= LTprev or (EQprev and (not A) and B);
+	GT <= GTprev or (EQprev and A and (not B));
+	EQ <= EQprev or (EQprev and ((not A) xor B));
+
+end struct;

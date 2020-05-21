@@ -1,0 +1,19 @@
+library ieee;
+use ieee.std_logic_1164.all;
+
+entity ALUcontrol is 
+	port(
+		ALUop: in std_logic_vector (1 downto 0);
+		function_field: in std_logic_vector (5 downto 0);
+		operation: out std_logic_vector (2 downto 0);
+	);
+end ALUcontrol;
+
+architecture struct of ALUcontrol is 
+begin
+operation(0) <= ALUop(1) and (function_field(0) or function_field(3));
+operation(1) <= (not ALUop(1)) or (not function_field(2));
+operation(2) <= ALUop(0) or (ALUop(1) and function_field(1));
+end struct;
+
+--- 000 => AND, 001 => OR, 010 => add, 110 => subtract, 111 => set-on-less-than

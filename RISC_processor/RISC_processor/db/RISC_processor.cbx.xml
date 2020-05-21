@@ -1,0 +1,7 @@
+<?xml version="1.0" ?>
+<LOG_ROOT>
+	<PROJECT NAME="RISC_processor">
+		<CBX_INST_ENTRY INSTANCE_NAME="|top|RISC_processor:myRISC|myData_memory:RAM|altsyncram:altsyncram_component" CBX_FILE_NAME="altsyncram_0eg1.tdf"/>
+		<CBX_INST_ENTRY INSTANCE_NAME="|top|RISC_processor:myRISC|myInstruction_memory:ROM|altsyncram:altsyncram_component" CBX_FILE_NAME="altsyncram_e5a1.tdf"/>
+	</PROJECT>
+</LOG_ROOT>

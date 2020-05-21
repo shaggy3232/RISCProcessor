@@ -1,0 +1,18 @@
+library ieee;
+use ieee.std_logic_1164.all;
+
+entity RISC_processor is 
+	port (
+		GClock, GReset; in std_logic;
+		ValueSelect; in std_logic_vector(2 downto 0);
+		
+		MuxOut: out std_logic_vector(7 downto 0);
+		InstructionOut: out std_logic_vector(31 downto 0);
+		
+		BranchOut,ZeroOut,MemWriteOut,RegWriteOut; out std_logic
+	);
+end entity;
+
+architecture top of RISC_processor is
+begin
+end top;

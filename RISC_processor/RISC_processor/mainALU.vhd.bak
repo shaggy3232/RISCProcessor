@@ -1,0 +1,85 @@
+library ieee;
+use ieee.std_logic_1164.all;
+
+entity mainALU is 
+	port(
+		A, B: in std_logic_vector (7 downto 0);
+		operation: in std_logic_vector (2 downto 0);
+		zero: out std_logic;
+		ALUresult: out std_logic_vector (7 downto 0)
+	);
+end mainALU;
+
+architecture struct of mainALU is 
+
+	component nbit_adder
+	generic (n: integer := 8);
+		port (
+			A, B: in std_logic_vector(n-1 downto 0);
+			Z: out std_logic_vector (n-1 downto 0);
+		
+			Cin: in std_logic;
+			Cout: out std_logic
+		);
+	end component;
+	
+	component nbit_one_comp
+	generic(n: integer := 8);
+		port(
+			A: in std_logic_vector(n-1 downto 0);
+			B: out std_logic_vector(n-1 downto 0)
+		);
+	end component;
+	
+	component nBitComparator
+	generic (n: integer := 8);
+		port(
+			A,B: in std_logic_vector(n-1 downto 0);
+			LTprev: in std_logic;
+			LT: out std_logic
+		);
+	end component;
+	
+	component nbit_mux2_1
+	generic (n: integer := 8);
+		port(
+			opt1,opt2: in std_logic_vector(n-1 downto 0);
+			sel: in std_logic;
+			muxOut: out std_logic_vector(n-1 downto 0)
+		);
+	end component;
+	
+	component nbitmux8_1
+	generic (n: integer := 8);
+		port(
+			opt1,opt2,opt3,opt4,opt5,opt6,opt7,opt8: in std_logic_vector(n-1 downto 0);
+			sel: in std_logic_vector (2 downto 0);
+			muxOut: out std_logic_vector (n-1 downto 0)
+		);
+	end component;
+	
+	signal add_out, subtract_out, and_out, or_out, set_lt_out, complementer_out, ALU_result: std_logic_vector (7 downto 0);
+	signal dont_cares: std_logic_vector (1 downto 0);
+	signal comparator_out: std_logic;
+	
+begin
+
+	--AND op
+	and_out <= A and B;
+	--OR op
+	or_out <= A or B;
+	--ADD op
+	adder8bits: nbit_adder generic map(8) port map(A, B, add_out, '0', dont_cares(0));
+	--SUBTRACT op (assumes answer isn't negative)
+	complementer8bit: nbit_one_comp generic map(8) port map(B, complementer_out);
+	subtract8bits: nbit_adder generic map(8) port map(A, complementer_out, subtract_out, '1', dont_cares(1));
+	--set_on_less_than op
+	compare8bit: nbitComparator generic map(8) port map(A,B,'0', comparator_out);
+	mux21: nbit_mux2_1 generic map(8) port map(A,"00000000",comparator_out, set_lt_out);
+	
+	--mux8-1 to select correct ALUresult (unsupported operations set the alu result to 0)
+	mux81: nbitmux8_1 generic map(8) port map (and_out, or_out, add_out, "00000000", "00000000", "00000000", subtract_out, set_lt_out, operation, ALU_result);
+	
+	zero <= (not (A(0) xor B(0))) and (not (A(1) xor B(1))) and (not (A(2) xor B(2))) and (not (A(3) xor B(3))) and (not (A(4) xor B(4))) and (not (A(5) xor B(5))) and (not (A(6) xor B(6))) and (not (A(7) xor B(7)));
+	ALUresult <= ALU_result;
+end struct;
